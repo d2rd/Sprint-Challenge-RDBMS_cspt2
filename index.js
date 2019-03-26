@@ -38,6 +38,35 @@ server.get('/projects', (req, res) => {
   });
 });
 
+//GET PROJECT BY ID
+
+server.get('/projects/:id', (req, res) => {
+  const {id} = req.params;
+  db('projects').where('id', id)
+      .then(project => res.json(project))
+      .catch(err => res.status(500).json({ message: "Could not fetch requested project" }))
+});
+
+// DELETE PROJECT BY ID
+server.delete('/projects/:id', (req, res) =>{
+  const {id} = req.params;
+  db('projects').where('id', id).del()
+      .then(rowsDeleted => {res.status(201).json(rowsDeleted)})
+      .catch(err => {res.status(500).json({ message: "Unable to delete this project" })})
+});
+
+// UPDATE PROJECT BY ID
+
+server.put('/projects/:id', (req, res) => {
+  const {id} = req.params;
+  const project = req.body;
+  db('projects').where('id', id).update(project)
+      .then(rowCount => {
+          res.json(rowCount)
+      })
+      .catch(err => {res.status(500).json({ message: "Unable to update project" })})
+});
+
 
 // ACTIONS
 // POST = INSERT INTO actions (id, description,notes, flag) VALUES ('','','','')
@@ -53,6 +82,7 @@ server.post('/actions', (req, res) => {
     })
   }
 });
+
 
 //GET ALL = SELECT * FROM actions
 server.get('/actions', (req, res) => {
